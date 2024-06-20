@@ -1,5 +1,6 @@
 package com.kuro9.karaokespring.service
 
+import com.kuro9.karaokespring.env.ProfileConfig
 import com.kuro9.karaokespring.util.errorLog
 import com.kuro9.karaokespring.util.infoLog
 import com.kuro9.karaokespring.util.json
@@ -14,18 +15,23 @@ import org.springframework.stereotype.Service
 import java.time.Duration
 
 @Service
-class WebhookService {
+class WebhookService(private val webhookConfig: ProfileConfig.Webhook) {
     private val restTemplate = RestTemplateBuilder()
         .setConnectTimeout(Duration.ofSeconds(10))
         .setReadTimeout(Duration.ofSeconds(10))
         .build()
 
-    fun sendWebhook(webhookEndpoint: String, e: Throwable, request: HttpServletRequest) {
+    fun sendErrorWebhook(e: Throwable, request: HttpServletRequest) {
+        if (webhookConfig.isErrorWebhookEnabled.not()) {
+            infoLog("Error Webhook Disabled. Skipping...")
+            return
+        }
+
         runCatching {
             val jsonString = toJsonString(e, request)
             infoLog(jsonString)
 
-            val req = RequestEntity.post(webhookEndpoint)
+            val req = RequestEntity.post(webhookConfig.errorWebhookChannel)
                 .header("Content-Type", "application/json")
                 .body(jsonString)
 
