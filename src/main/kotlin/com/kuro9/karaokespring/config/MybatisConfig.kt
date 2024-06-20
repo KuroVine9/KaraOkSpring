@@ -2,7 +2,6 @@ package com.kuro9.karaokespring.config
 
 import org.mybatis.spring.SqlSessionFactoryBean
 import org.mybatis.spring.SqlSessionTemplate
-import org.mybatis.spring.annotation.MapperScan
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -13,7 +12,6 @@ import javax.sql.DataSource
 
 @Configuration
 @EnableTransactionManagement
-@MapperScan(basePackages = ["com.kuro9.karaokespring.repository"], sqlSessionFactoryRef = "sqlSessionFactory")
 class MybatisConfig(private val context: ApplicationContext) {
 
     @Bean
