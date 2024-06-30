@@ -19,7 +19,7 @@ class TjHomePageParseService {
         val result = restTemplate.getForObject(url, String::class.java) ?: return emptyList()
         val page = Jsoup.parseBodyFragment(result)
         val songTableElement = page.selectXpath("//*[@id=\"BoardType1\"]/table/tbody/tr").also {
-            if (it.isEmpty()) return emptyList()
+            if (it.size <= 1) return emptyList()
         }
         return songTableElement.drop(1).map { node ->
             val data = node.select("td").map { it.text() }
