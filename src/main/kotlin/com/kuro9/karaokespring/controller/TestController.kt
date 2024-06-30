@@ -1,6 +1,7 @@
 package com.kuro9.karaokespring.controller
 
 import com.kuro9.karaokespring.api.tj.TjHomePageParseService
+import com.kuro9.karaokespring.interfaces.Song
 import com.kuro9.karaokespring.repository.NewSongLogRepo
 import com.kuro9.karaokespring.repository.condition.NewSongSearchCondition
 import com.kuro9.karaokespring.repository.entity.NewSong
@@ -24,7 +25,7 @@ class TestController(
         logger.info("testlog")
         return repo.find(
             NewSongSearchCondition.Range(
-                1L, NewSong.Brand.TJ, YearMonth.now().toRangeOfMonth()
+                Song.Brand.TJ, YearMonth.now().toRangeOfMonth()
             )
         )
     }

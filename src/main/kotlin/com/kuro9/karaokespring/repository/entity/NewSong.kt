@@ -1,18 +1,19 @@
 package com.kuro9.karaokespring.repository.entity
 
+import com.kuro9.karaokespring.interfaces.Song
 import com.kuro9.karaokespring.util.yyyyMMdd
 import java.time.LocalDateTime
 
 data class NewSong(
-    val id: Long,
-    val brand: Brand,
+    override val id: Long,
+    override val brand: Brand,
     val title: String,
     val singer: String,
     val lyricist: String,
     val composer: String,
     val yyyyMMdd: String,
     val createdAt: LocalDateTime
-) {
+) : Song() {
 
     constructor(
         id: Long,
@@ -31,6 +32,4 @@ data class NewSong(
         yyyyMMdd = LocalDateTime.now().yyyyMMdd,
         createdAt = LocalDateTime.now()
     )
-
-    enum class Brand { TJ, KY }
 }
