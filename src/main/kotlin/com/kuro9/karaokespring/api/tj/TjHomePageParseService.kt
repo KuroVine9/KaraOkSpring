@@ -7,7 +7,7 @@ import org.springframework.web.client.RestClientException
 import java.time.Duration
 
 @Service
-class TJ {
+class TjHomePageParseService {
     private val url = "https://www.tjmedia.com/tjsong/song_monthNew.asp"
     private val restTemplate = RestTemplateBuilder()
         .setReadTimeout(Duration.ofSeconds(10))
