@@ -1,6 +1,7 @@
 package com.kuro9.karaokespring.batch
 
 import com.kuro9.karaokespring.api.tj.TjHomePageParseService
+import com.kuro9.karaokespring.batch.job.DefaultJob
 import com.kuro9.karaokespring.interfaces.Song
 import com.kuro9.karaokespring.repository.NewSongLogRepo
 import com.kuro9.karaokespring.repository.condition.NewSongSearchCondition
@@ -8,7 +9,6 @@ import com.kuro9.karaokespring.repository.entity.NewSong
 import com.kuro9.karaokespring.util.infoLog
 import com.kuro9.karaokespring.util.toRangeOfMonth
 import org.quartz.JobExecutionContext
-import org.springframework.scheduling.quartz.QuartzJobBean
 import org.springframework.stereotype.Component
 import java.time.YearMonth
 
@@ -16,11 +16,9 @@ import java.time.YearMonth
 class TjNewSongParseJob(
     private val tjPageParseService: TjHomePageParseService,
     private val newSongRepo: NewSongLogRepo
-) : QuartzJobBean() {
+) : DefaultJob() {
 
-
-    override fun executeInternal(context: JobExecutionContext) {
-        infoLog("===== BEGIN ${this::class.simpleName} =====")
+    override fun doExecute(context: JobExecutionContext) {
         val newSongList = tjPageParseService.get()
         val savedNewSong: List<Song> = newSongRepo.find(
             NewSongSearchCondition.Range(
@@ -43,7 +41,5 @@ class TjNewSongParseJob(
                 )
             )
         }
-
-        infoLog("===== END ${this::class.simpleName} =====")
     }
 }

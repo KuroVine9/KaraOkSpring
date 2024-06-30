@@ -18,6 +18,6 @@ class TjNewSongParseJobConfig {
     fun tjNewSongParseJobTrigger(): Trigger =
         TriggerBuilder.newTrigger()
             .forJob(tjNewSongParseJobDetail())
-            .withSchedule(CronScheduleBuilder.cronSchedule("40 * * * * ?"))
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 0 9 * * ?"))
             .build()
 }

@@ -29,7 +29,25 @@ class WebhookService(private val webhookConfig: ProfileConfig.Webhook) {
 
         runCatching {
             val jsonString = toJsonString(e, request)
-            infoLog(jsonString)
+
+            val req = RequestEntity.post(webhookConfig.errorWebhookChannel)
+                .header("Content-Type", "application/json")
+                .body(jsonString)
+
+            val res = restTemplate.exchange(req, String::class.java)
+
+            infoLog("Webhook Response: {}", res.statusCode)
+        }.onFailure { errorLog("Webhook Error", it) }
+    }
+
+    fun <T> sendBatchErrorWebhook(e: Throwable, jobClass: Class<T>) {
+        if (webhookConfig.isErrorWebhookEnabled.not()) {
+            infoLog("Error Webhook Disabled. Skipping...")
+            return
+        }
+
+        runCatching {
+            val jsonString = toJsonString(e, jobClass.simpleName)
 
             val req = RequestEntity.post(webhookConfig.errorWebhookChannel)
                 .header("Content-Type", "application/json")
@@ -42,8 +60,7 @@ class WebhookService(private val webhookConfig: ProfileConfig.Webhook) {
     }
 
     companion object ErrorMapper {
-        fun toJsonString(e: Throwable, request: HttpServletRequest): String {
-            val requestUrl = request.requestURL.toString()
+        fun toJsonString(e: Throwable, requestUrl: String? = null): String {
             val method = e.stackTrace[0].methodName
             val className = e.stackTrace[0].className
 
@@ -54,7 +71,7 @@ class WebhookService(private val webhookConfig: ProfileConfig.Webhook) {
                     embeds = listOf(
                         Embed(
                             title = "Request URL:",
-                            description = requestUrl,
+                            description = requestUrl ?: "<No URL provided>",
                             color = 16711680,
                             fields = listOf(
                                 Field(name = "Message:", value = e.localizedMessage ?: ""),
@@ -72,5 +89,7 @@ class WebhookService(private val webhookConfig: ProfileConfig.Webhook) {
                 )
             )
         }
+
+        fun toJsonString(e: Throwable, request: HttpServletRequest) = toJsonString(e, request.requestURL.toString())
     }
 }
